@@ -27,6 +27,7 @@ import sys
 from lsst.imgserv.locateImage import dbOpen, W13RawDb
 import lsst.log as log
 
+
 def testDefault():
     w13Raw = dbOpen("~/.mysqlAuthLSST.lsst10", W13RawDb)
     # file format:
@@ -44,6 +45,7 @@ def testDefault():
     print "Writing img.fits", img
     img.writeFits("img.fits")
     w13Raw.closeConnection()
+
 
 def test(argv):
     w13Raw = dbOpen("~/.mysqlAuthLSST.lsst10", W13Raw)

@@ -182,7 +182,7 @@ def _getICutout(_request, W13db, units):
         msg = "INVALID_INPUT width={} height={}".format(widthIn, heightIn)
         return _error(ValueError.__name__, msg, BAD_REQUEST)
     log.info("raw cutout pixel ra={} dec={} filt={} width={} height={}".format(
-            ra, dec, filt, width, height))
+        ra, dec, filt, width, height))
 
     # fetch the image here
     w13db = dbOpen("~/.lsst/dbAuth-dbServ.ini", W13db)
@@ -267,7 +267,7 @@ def _getISkyMapDeepCoaddCutout(_request, units):
         msg = "INVALID_INPUT width={} height={}".format(widthIn, heightIn)
         return _error(ValueError.__name__, msg, BAD_REQUEST)
     log.info("skymap cutout pixel ra={} dec={} filt={} width={} height={}".format(
-            ra, dec, filt, width, height))
+        ra, dec, filt, width, height))
     # fetch the image here
     raA = afwGeom.Angle(ra, afwGeom.degrees)
     decA = afwGeom.Angle(dec, afwGeom.degrees)

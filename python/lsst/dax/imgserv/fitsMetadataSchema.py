@@ -22,7 +22,7 @@
 
 
 schemaToCreate = (
-"""
+    """
 CREATE TABLE FitsFiles
     -- <descr>Table of basic FITS file information. Name, location,
     -- number of HDUs
@@ -35,7 +35,7 @@ CREATE TABLE FitsFiles
 ) ENGINE=InnoDB
 """,
 
-"""CREATE TABLE FitsKeyValues
+    """CREATE TABLE FitsKeyValues
     -- <descr>Table of FITS keyword and value pairs. </descr>
 (
     fitsFileId  BIGINT      NOT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE FitsFiles
 ) ENGINE=InnoDB
 """,
 
-"""CREATE TABLE FitsPositions
+    """CREATE TABLE FitsPositions
     -- <descr>Table of RA and Dec position and exposure time.</descr>
 (
     fitsFileId BIGINT  NOT NULL,
@@ -68,11 +68,11 @@ CREATE TABLE FitsFiles
 ) ENGINE=InnoDB
 """,
 
-"""ALTER TABLE FitsKeyValues ADD CONSTRAINT FK_fitsKeyVal_fitsFileId
+    """ALTER TABLE FitsKeyValues ADD CONSTRAINT FK_fitsKeyVal_fitsFileId
     FOREIGN KEY (fitsFileId) REFERENCES FitsFiles(fitsFileId)
 """,
 
-"""ALTER TABLE FitsPositions ADD CONSTRAINT FK_fitsPos_fitsFileId
+    """ALTER TABLE FitsPositions ADD CONSTRAINT FK_fitsPos_fitsFileId
     FOREIGN KEY (fitsFileId) REFERENCES FitsFiles(fitsFileId)
 """
 

@@ -46,6 +46,7 @@ def _getSubImg(imgSrc, box):
     subImg = imgSrc[box[0]:box[2], box[1]:box[3]].clone()
     return subImg
 
+
 def stitchTestDeepCoadd():
     w13Db = dbOpen("~/.mysqlAuthLSST.lsst10", W13DeepCoaddDb)
     fullImg, metaFull = w13Db.getImageFullWithMetadata(19.36995, -0.3146)

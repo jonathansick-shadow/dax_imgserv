@@ -24,7 +24,8 @@ import ConfigParser
 import getopt
 import sys
 import os
-import sched, time
+import sched
+import time
 import subprocess
 from datacat import Client, unpack
 from datacat.config import CONFIG_URL
@@ -35,9 +36,11 @@ from datetime import datetime
 from .MetadataFitsDb import isFits
 import lsst.log as log
 
+
 class DataCatCfg():
     '''Class to load and stor configuration information for DataCat
     '''
+
     def __init__(self, cfgFile="~/.datacat.cfg", logger=log):
         '''Set default values if cfgFile is not found.
         '''
@@ -59,9 +62,11 @@ class DataCatCfg():
     def getRestUrl(self):
         return self._restUrl
 
+
 class DataCatUtil:
     '''Simple class to work with DataCat
     '''
+
     def __init__(self, dataCatCfg, logger=log):
         self._dataCatCfg = dataCatCfg
         self._client = Client(self._dataCatCfg.getRestUrl())
@@ -77,7 +82,7 @@ class DataCatUtil:
         self._log.info("registerFile %s %s" % (fileName, datasetName))
         fileName = expandDir(fileName)
         try:
-            path=self._path
+            path = self._path
             self._client.create_dataset(path=path, name=datasetName,
                                         dataType=self._dataType, fileFormat=self._fileFormat,
                                         versionId=self._versionId, site=self._site,
@@ -109,11 +114,11 @@ class DataCatUtil:
             self._log.info('Found directory: %s' % dirName)
             for fName in fileList:
                 fullName = os.path.join(dirName, fName)
-                self._log.info(' %s'%  fullName)
+                self._log.info(' %s' % fullName)
                 if isFits(fullName):
                     parts = fullName.split('/')
-                    datasetName = prefix  + self._slashSub.join(parts)
-                    self._log.info('  %s is a FITS file %s' %  (fullName, datasetName))
+                    datasetName = prefix + self._slashSub.join(parts)
+                    self._log.info('  %s is a FITS file %s' % (fullName, datasetName))
                     try:
                         self._client.create_dataset(path=self._path, name=datasetName,
                                                     dataType=self._dataType,
@@ -141,7 +146,7 @@ class DataCatUtil:
             self._log.info('Found directory: %s' % dirName)
             for fName in fileList:
                 fullName = os.path.join(dirName, fName)
-                self._log.info('\t%s'%  fullName)
+                self._log.info('\t%s' % fullName)
                 if isFits(fullName):
                     parts = fullName.split('/')
                     datasetName = prefix + self._slashSub.join(parts)
@@ -154,8 +159,6 @@ class DataCatUtil:
                         self._log.warn("delete dataset exception %s %s", e,
                                        str(fullDsName))
         return c
-
-
 
 
 def helpMsg():
@@ -172,12 +175,13 @@ def expandDir(directory):
     '''Make the directory an absolute path'''
     return os.path.abspath(directory)
 
+
 def main(argv):
     dataCatCfg = DataCatCfg()
     dcu = DataCatUtil(dataCatCfg)
-    aVals = { "fileName":"", "dirName":"", "datasetName":"", "command":"" }
+    aVals = {"fileName": "", "dirName": "", "datasetName": "", "command": ""}
     try:
-        opts, args = getopt.getopt(argv,"h",["DEL","regf=","regd=","ds=","DEL_dir="])
+        opts, args = getopt.getopt(argv, "h", ["DEL", "regf=", "regd=", "ds=", "DEL_dir="])
     except getopt.GetoptError:
         helpMsg()
         sys.exit(2)

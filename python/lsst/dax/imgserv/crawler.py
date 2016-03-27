@@ -36,7 +36,8 @@ supply DataCat metadata with the foreign table fileId.
 
 import sys
 import os
-import sched, time
+import sched
+import time
 import subprocess
 from datacat import Client, unpack
 from datacat.config import CONFIG_URL
@@ -50,6 +51,7 @@ from .dataCatUtil import DataCatCfg
 
 WATCH_FOLDER = '/LSST'
 WATCH_SITE = 'SLAC'
+
 
 class Crawler:
 
@@ -80,7 +82,6 @@ class Crawler:
 
     def get_metadata(self, path):
         return None
-
 
     def run(self):
         credFileName = "~/.lsst/dbAuth-dbServ.ini"
@@ -137,7 +138,7 @@ class Crawler:
                                                        versionId=dataset.versionId, site=WATCH_SITE)
                 log.debug("Inserting %s", str(file_path))
                 fileId = metaDb.insertFile(file_path)
-                metadata = {"fileId":fileId}
+                metadata = {"fileId": fileId}
                 md_patch = {}
                 md_patch["versionMetadata"] = metadata
                 md_patch_resp = self.client.patch_dataset(dataset_path, md_patch,

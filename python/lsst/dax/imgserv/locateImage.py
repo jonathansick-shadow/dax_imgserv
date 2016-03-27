@@ -21,7 +21,7 @@
 #
 #
 # This code is used to to select an image or a cutout of an image
-# that has its center closest to the specified RA and Dec. The 
+# that has its center closest to the specified RA and Dec. The
 # image is retrieved using the Data Butler.
 
 '''
@@ -53,6 +53,7 @@ from lsst.obs.sdss import sdssMapper
 class W13Db:
     '''Base class for examining DC_W13_Stripe82 data
     '''
+
     def __init__(self, credFileName, database, table, columns, dataRoot, logger):
         self._log = logger
         self._table = table
@@ -142,8 +143,8 @@ class W13Db:
         # length of a line from upper left (UL) to lower right (LR)
         decDist = raDecUL[1].asArcseconds() - raDecLR[1].asArcseconds()
         raLR = _keepWithin180(raDecUL[0].asDegrees(), raDecLR[0].asDegrees())
-        raLR *= 3600.0 # convert degrees to arcseconds
-        #Correct distance in RA for the declination
+        raLR *= 3600.0  # convert degrees to arcseconds
+        # Correct distance in RA for the declination
         cosDec = math.cos(dec*afwGeom.degrees)
         raDist = cosDec * (raDecUL[0].asArcseconds() - raLR)
         raDecDist = math.sqrt(math.pow(decDist, 2.0) + math.pow(raDist, 2.0))
@@ -167,22 +168,23 @@ class W13Db:
         maxRa = ra + arcW
         minDec = dec - arcH
         maxDec = dec + arcH
-        cols = [ "ra", "decl" ]
+        cols = ["ra", "decl"]
         for s in self._columns:
             cols.append(s)
         dist = "(power((ra - {}),2) + power((decl - {}),2)) as distance".format(ra, dec)
-        #More accurate distance calc on a sphere-if needed
-        #SELECT *, 2 * ASIN(SQRT(POWER(SIN((raA)*pi()/180/2),2)+
+        # More accurate distance calc on a sphere-if needed
+        # SELECT *, 2 * ASIN(SQRT(POWER(SIN((raA)*pi()/180/2),2)+
         #  COS(raA*pi()/180)*COS(abs(raB)*pi()/180)*
         # POWER(SIN((decB.lon)*pi()/180/2),2)) as distance
         # FROM <table> order by distance ;
         cols.append(dist)
         col_str = ",".join(cols)
         sql = ("SELECT {} FROM {} WHERE "
-            "scisql_s2PtInBox(ra, decl, {}, {}, {}, {}) = 1 order by distance LIMIT 1").format(
+               "scisql_s2PtInBox(ra, decl, {}, {}, {}, {}) = 1 order by distance LIMIT 1").format(
             col_str, self._table, minRa, minDec, maxRa, maxDec)
         self._log.info(sql)
         return self._conn.execute(sql).fetchall()
+
 
 class W13RawDb(W13Db):
     '''This class is used to connect to the DC_W13_Stripe82 Raw database.
@@ -194,6 +196,7 @@ class W13RawDb(W13Db):
     Table columns: run, camcol, field, filterName
     butler.get("raw", run=run, camcol=camcol, field=field, filter=filterName)
     '''
+
     def __init__(self, credFileName, logger=log):
         # @todo The names needed for the data butler need to come from a central location.
         W13Db.__init__(self,
@@ -225,6 +228,7 @@ class W13RawDb(W13Db):
             return butler.get("fpC_md", run=run, camcol=camcol,
                               field=field, filter=filterName)
 
+
 class W13DeepCoaddDb(W13Db):
     '''This class is used to connect to the DC_W13_Stripe82 Coadd database.
     Coadd images
@@ -235,6 +239,7 @@ class W13DeepCoaddDb(W13Db):
     Table columns: tract, patch, filterName
     butler.get("deepCoadd", filter=filterName, tract=tract, patch=patch)
     '''
+
     def __init__(self, credFileName, logger=log):
         # @todo The names needed for the data butler need to come from a central location.
         W13Db.__init__(self,
@@ -254,7 +259,7 @@ class W13DeepCoaddDb(W13Db):
             tract = ln[2]
             patch = ln[3]
             filterName = ln[4]
-            butler=lsst.daf.persistence.Butler(self._dataRoot)
+            butler = lsst.daf.persistence.Butler(self._dataRoot)
             img = butler.get("deepCoadd", tract=tract, patch=patch, filter=filterName)
             return img, butler
         return None, None
@@ -268,6 +273,7 @@ class W13DeepCoaddDb(W13Db):
             filterName = ln[4]
             metadata = butler.get("deepCoadd_md", tract=tract, patch=patch, filter=filterName)
             return metadata
+
 
 def _cutoutBoxPixels(srcImage, xyCenter, width, height, log):
     '''Returns an image cutout from the source image.
@@ -304,9 +310,9 @@ def _cutoutBoxPixels(srcImage, xyCenter, width, height, log):
     pixW = int(pixW)
     pixH = int(pixH)
     log.debug("pixULX=%d pixULY=%d pixW=%d pixH=%d", pixULX, pixULY, pixW, pixH)
-    #bbox = afwGeom.Box2I(afwGeom.Point2I(pixULX, pixULY),
+    # bbox = afwGeom.Box2I(afwGeom.Point2I(pixULX, pixULY),
     #                    afwGeom.Extent2I(pixW, pixH))
-    #img = butler.get("fpC_sub", run=run, camcol=camcol,
+    # img = butler.get("fpC_sub", run=run, camcol=camcol,
     #                 field=field, filter=filterName, bbox=bbox)
     pixEndX = pixULX + pixW
     pixEndY = pixULY + pixH
@@ -317,8 +323,10 @@ def _cutoutBoxPixels(srcImage, xyCenter, width, height, log):
     imgSub = srcImage[pixULX:pixEndX, pixULY:pixEndY].clone()
     return imgSub
 
+
 def _arcsecToDeg(arcsecs):
     return float(arcsecs/3600.0)
+
 
 def _keepWithin180(target, val):
     '''Return a value that is equivalent to val on circle
@@ -329,6 +337,7 @@ def _keepWithin180(target, val):
     while val < (target - 180.0):
         val += 360.0
     return val
+
 
 def dbOpen(credFileName, W13db, logger=log):
     '''Open a database connection and return an instance of the

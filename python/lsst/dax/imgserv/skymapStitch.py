@@ -37,6 +37,7 @@ import lsst.afw.math as afwMath
 
 from .imageStitch import stitchExposuresGoodPixelCopy
 
+
 def getSkyMap(ctrCoord, width, height, filt, units, source, mapType, patchType):
     '''Merge multiple patches from a SkyMap into a single image.
     This function takes advantage of the fact that all tracts in a SkyMap share
@@ -59,7 +60,7 @@ def getSkyMap(ctrCoord, width, height, filt, units, source, mapType, patchType):
     if (units != 'arcsecond' and units != 'pixel'):
         units = 'pixel'
     destBBox = getBBoxForCoords(destWcs, ctrCoord, width, height, units)
-    destCornerCoords = [destWcs.pixelToSky(pixPos) for pixPos in  afwGeom.Box2D(destBBox).getCorners()]
+    destCornerCoords = [destWcs.pixelToSky(pixPos) for pixPos in afwGeom.Box2D(destBBox).getCorners()]
     # Collect patches of the SkyMap that are in the target region. Create source exposures from
     # the patches within each tract as all patches from a tract share a WCS.
     srcExposureList = []
@@ -73,7 +74,7 @@ def getSkyMap(ctrCoord, width, height, filt, units, source, mapType, patchType):
         srcBBox = afwGeom.Box2I()
         for patchInfo in patchList:
             srcBBox.include(patchInfo.getOuterBBox())
-        srcExposure = afwImage.ExposureF(srcBBox, srcWcs) # blank, so far
+        srcExposure = afwImage.ExposureF(srcBBox, srcWcs)  # blank, so far
         srcExposureList.append(srcExposure)
 
         # load srcExposures with patches
@@ -94,7 +95,7 @@ def getSkyMap(ctrCoord, width, height, filt, units, source, mapType, patchType):
         sImg = srcExpo.getMaskedImage()
         srcWcs = srcExpo.getWcs()
         if j == 0:
-            dBBox = destBBox # destBBox only correct for first image
+            dBBox = destBBox  # destBBox only correct for first image
         else:
             # Determine the correct BBox (in pixels) for the current srcWcs
             llCorner = afwGeom.Point2I(srcWcs.skyToPixel(destCornerCoords[0]))
@@ -106,10 +107,10 @@ def getSkyMap(ctrCoord, width, height, filt, units, source, mapType, patchType):
                 llCorner.setY(0)
             if urCorner.getX() < 0:
                 urCorner.setX(0)
-                log.warn("getSkyMap negative X for urCorner");
+                log.warn("getSkyMap negative X for urCorner")
             if urCorner.getY() < 0:
                 urCorner.setY(0)
-                log.warn("getSkyMap negative Y for urCorner");
+                log.warn("getSkyMap negative Y for urCorner")
             dBBox = afwGeom.Box2I(llCorner, urCorner)
         log.info("j={} dBBox={} sBBox={}".format(j, dBBox, srcExpo.getBBox()))
         dExpo = afwImage.ExposureF(dBBox, srcWcs)
@@ -143,7 +144,7 @@ def getSkyMap(ctrCoord, width, height, filt, units, source, mapType, patchType):
 
     # If there's only one exposure in the list (and there usually is) just return it.
     if len(destExposureList) == 1:
-        return  destExposureList[0]
+        return destExposureList[0]
 
     # Need to stitch together the multiple destination exposures.
     log.debug("getSkyMap stitching together multiple destExposures")
@@ -164,7 +165,7 @@ def getBBoxForCoords(wcs, ctrCoord, width, height, units):
     '''
     bbox = afwGeom.Box2I()
     if units == 'arcsecond':
-        #ctrCoord center, RA and Dec with width and height in arcseconds
+        # ctrCoord center, RA and Dec with width and height in arcseconds
         widthHalfA = afwGeom.Angle((width/2.0), afwGeom.arcseconds)
         heightHalfA = afwGeom.Angle((height/2.0), afwGeom.arcseconds)
         minRa = ctrCoord.getLongitude() - widthHalfA
